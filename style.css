@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap');
+
+:root {
+    --background-color: #f5f5f7;
+    --text-color: #1d1d1f;
+    --secondary-text-color: #86868b;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
+
+header, section, footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 2rem;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+section.visible,
+header.visible,
+footer.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+h2 {
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: #1d1d1f; /* 使用更深的主文本颜色 */
+    opacity: 0.9;
+    margin: 1rem 0;
+}
+
+p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 600px;
+    color: #333333; /* 调整为更易读的深灰色 */
+}
+
+footer p {
+    font-size: 1rem;
+    color: var(--secondary-text-color);
+}
