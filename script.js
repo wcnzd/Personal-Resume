@@ -1,66 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 文本逐词动画
-    const animatedTextElements = document.querySelectorAll('h1, h2, p');
-    animatedTextElements.forEach(el => {
-        const text = el.textContent.trim();
-        const words = text.split(/\s+/); // 按空格分割单词
-        el.innerHTML = ''; // 清空原始内容
-        words.forEach((word, index) => {
-            const span = document.createElement('span');
-            span.className = 'char';
-            span.innerHTML = `${word}&nbsp;`; // 添加空格
-            span.style.setProperty('--char-index', index);
-            el.appendChild(span);
-        });
-    });
+    const panels = document.querySelectorAll('.panel');
+    const header = document.querySelector('header');
 
-    // 容器进入视窗的观察者
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1 // 元素进入10%时触发
-    };
+    const updateAnimation = () => {
+        const viewportHeight = window.innerHeight;
+        const scrollY = window.scrollY;
 
-    const observerCallback = (entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
+        // 处理Header的滚动缩放
+        if (header) {
+            const headerScrollDistance = Math.min(scrollY, viewportHeight);
+            const progress = headerScrollDistance / viewportHeight;
+            const scale = 1 - progress * 0.2;
+            const opacity = 1 - progress * 1.5;
+            header.style.transform = `scale(${Math.max(0.8, scale)})`;
+            header.style.opacity = Math.max(0, opacity);
+        }
+
+        // 处理每个panel内部的动画
+        panels.forEach(panel => {
+            const section = panel.querySelector('section, footer');
+            if (!section) return;
+
+            const contentElements = section.querySelectorAll('h2, p, .email-link');
+            const panelTop = panel.offsetTop;
+            const panelHeight = panel.offsetHeight;
+
+            // 计算滚动进度 (0 = panel顶部与视窗顶部对齐, 1 = panel底部与视窗底部对齐)
+            const progress = (scrollY - panelTop + viewportHeight) / (panelHeight);
+
+            // 我们只关心在panel可见区域内的动画
+            if (progress >= 0 && progress <= 1) {
+                
+                // 设计一个简单的动画曲线：在进度0.2到0.8之间达到顶峰
+                const animationProgress = Math.max(0, Math.min(1, (progress - 0.2) / 0.6));
+                
+                const opacity = animationProgress;
+                // 从下方20px处移入
+                const translateY = (1 - animationProgress) * 20;
+
+                contentElements.forEach((el, index) => {
+                    // 添加微小的延迟
+                    const delay = index * 0.1;
+                    const delayedProgress = Math.max(0, Math.min(1, (progress - 0.2 - delay) / 0.5));
+                    const delayedOpacity = delayedProgress;
+                    const delayedTranslateY = (1 - delayedProgress) * 20;
+
+                    el.style.opacity = delayedOpacity;
+                    el.style.transform = `translateY(${delayedTranslateY}px)`;
+                });
             }
         });
     };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    // IntersectionObserver现在只观察section和footer
-    const elementsToAnimate = document.querySelectorAll('section, footer');
-    elementsToAnimate.forEach(el => {
-        observer.observe(el);
-    });
-
-    // 新增：滚动缩放header的逻辑
-    const header = document.querySelector('header');
-    // 初始时让header可见
-    if(header) {
-        header.classList.add('visible');
-    }
-
-    window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        const viewportHeight = window.innerHeight;
-
-        // 在第一个视窗高度内完成动画
-        if (scrollY < viewportHeight) {
-            const progress = scrollY / viewportHeight;
-            const scale = 1 - progress * 0.2; // 从1缩小到0.8
-            const opacity = 1 - progress * 1.5; // 加快透明度变化
-
-            header.style.transform = `scale(${Math.max(0.8, scale)})`;
-            header.style.opacity = Math.max(0, opacity);
-        } else {
-             // 超出范围后固定在最终状态
-            header.style.transform = 'scale(0.8)';
-            header.style.opacity = '0';
-        }
-    });
+    // 初始调用一次以设置初始状态
+    updateAnimation();
+    // 添加滚动事件监听
+    window.addEventListener('scroll', updateAnimation);
 });

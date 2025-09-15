@@ -21,34 +21,33 @@ body {
     text-align: center;
 }
 
-header {
-    /* 为header单独设置样式以实现滚动缩放 */
-    position: sticky;
-    top: 0;
+main {
+    /* 移除main元素的默认边距，如果存在 */
+    margin: 0;
+}
+
+.panel {
+    /* 每个panel的高度是视窗的2倍，为内部动画提供滚动空间 */
+    height: 200vh;
+    position: relative;
+}
+
+header, section, footer {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* 使用height而不是min-height */
+    height: 100vh; /* 内容区域高度占满视窗 */
+    width: 100%;
     padding: 0 2rem;
     box-sizing: border-box;
-    will-change: transform, opacity; /* 性能优化 */
+    background-color: var(--background-color);
 }
 
 section, footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 0 2rem;
-    box-sizing: border-box;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    position: relative; /* 确保内容在header下方 */
-    z-index: 1;
-    background-color: var(--background-color); /* 避免透明 */
+    /* section和footer粘性定位在其父panel的顶部 */
+    position: sticky;
+    top: 0;
 }
 
 section.visible,
@@ -62,6 +61,7 @@ h1 {
     font-size: 4rem;
     font-weight: 700;
     margin: 0;
+    will-change: transform, opacity; /* 动画性能优化 */
 }
 
 h2 {
@@ -70,6 +70,7 @@ h2 {
     color: #1d1d1f; /* 使用更深的主文本颜色 */
     opacity: 0.9;
     margin: 1rem 0;
+    will-change: transform, opacity; /* 动画性能优化 */
 }
 
 p {
@@ -77,6 +78,7 @@ p {
     line-height: 1.6;
     max-width: 600px;
     color: #333333; /* 调整为更易读的深灰色 */
+    will-change: transform, opacity; /* 动画性能优化 */
 }
 
 footer p {
@@ -90,27 +92,11 @@ footer p {
     text-decoration: none;
     margin-top: 0.5rem;
     transition: color 0.3s ease;
+    will-change: transform, opacity; /* 动画性能优化 */
 }
 
 .email-link:hover {
     color: var(--text-color);
 }
 
-/* 逐词动画效果 */
-h1, h2, p {
-    /* 容器需要保留转换属性以便子元素定位 */
-    transform-style: preserve-3d;
-}
-
-.char {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(100%);
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.visible .char {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: calc(var(--char-index) * 25ms); /* 每个词延迟25毫秒 */
-}
+/* 暂时移除旧的JS驱动的动画样式，下一步将重新实现 */
