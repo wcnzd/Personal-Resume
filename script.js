@@ -32,8 +32,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    const elementsToAnimate = document.querySelectorAll('header, section, footer');
+    // IntersectionObserver现在只观察section和footer
+    const elementsToAnimate = document.querySelectorAll('section, footer');
     elementsToAnimate.forEach(el => {
         observer.observe(el);
+    });
+
+    // 新增：滚动缩放header的逻辑
+    const header = document.querySelector('header');
+    // 初始时让header可见
+    if(header) {
+        header.classList.add('visible');
+    }
+
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        const viewportHeight = window.innerHeight;
+
+        // 在第一个视窗高度内完成动画
+        if (scrollY < viewportHeight) {
+            const progress = scrollY / viewportHeight;
+            const scale = 1 - progress * 0.2; // 从1缩小到0.8
+            const opacity = 1 - progress * 1.5; // 加快透明度变化
+
+            header.style.transform = `scale(${Math.max(0.8, scale)})`;
+            header.style.opacity = Math.max(0, opacity);
+        } else {
+             // 超出范围后固定在最终状态
+            header.style.transform = 'scale(0.8)';
+            header.style.opacity = '0';
+        }
     });
 });
